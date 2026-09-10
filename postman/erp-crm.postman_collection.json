@@ -1,0 +1,292 @@
+{
+  "info": {
+    "name": "Nirvana Ops — Mini ERP + CRM",
+    "_postman_id": "0a2f19d4-9f6e-4c2a-b58c-9f1c2a3d4e5f",
+    "description": "Mini ERP + CRM operations portal API. Base URLs:\n  Local:   http://localhost:4000/api/v1\n  Vite proxy: http://localhost:5173/api/v1\n\nAuth: POST /auth/login returns { token }. Add `Authorization: Bearer <token>` to all protected calls.\nThe collection pre-request script logs in with the Sales account and saves the token.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:4000/api/v1" },
+    { "key": "email", "value": "sales@nirvana.in" },
+    { "key": "password", "value": "demo@12345" }
+  ],
+  "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "if (pm.request.url.path.join('/').endsWith('/login')) return;",
+          "const login = pm.sendRequest({",
+          "  url: pm.variables.get('baseUrl') + '/auth/login',",
+          "  method: 'POST',",
+          "  header: { 'Content-Type': 'application/json' },",
+          "  body: { mode: 'raw', raw: JSON.stringify({ email: pm.variables.get('email'), password: pm.variables.get('password') }) }",
+          "});",
+          "const res = login.json();",
+          "pm.collectionVariables.set('token', res.token);"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "POST /auth/login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}" },
+            "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] }
+          }
+        },
+        {
+          "name": "GET /auth/me",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/auth/me", "host": ["{{baseUrl}}"], "path": ["auth", "me"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Customers",
+      "item": [
+        {
+          "name": "GET /customers (search + filter + paging)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/customers?page=1&pageSize=20&search=&status=&type=",
+              "host": ["{{baseUrl}}"],
+              "path": ["customers"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "pageSize", "value": "20" },
+                { "key": "search", "value": "" },
+                { "key": "status", "value": "ACTIVE" },
+                { "key": "type", "value": "" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "POST /customers (sales/admin only)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Prasad Khopkar\",\n  \"mobile\": \"9822001122\",\n  \"email\": \"prasad.khopkar@gmail.com\",\n  \"businessName\": \"Khopkar Provision Store\",\n  \"gstNumber\": \"27ABKPK1234F1Z2\",\n  \"type\": \"RETAIL\",\n  \"address\": \"Shop 8, Kondhwa, Pune 411048\",\n  \"status\": \"LEAD\",\n  \"followUpDate\": \"2026-09-25T10:00:00.000Z\",\n  \"notes\": \"Quoted for sunrise detergent range.\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/customers", "host": ["{{baseUrl}}"], "path": ["customers"] }
+          }
+        },
+        {
+          "name": "GET /customers/:id",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/customers/:id", "host": ["{{baseUrl}}"], "path": ["customers", ":id"] }
+          }
+        },
+        {
+          "name": "PATCH /customers/:id",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"ACTIVE\",\n  \"followUpDate\": \"2026-10-02T09:00:00.000Z\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/customers/:id", "host": ["{{baseUrl}}"], "path": ["customers", ":id"] }
+          }
+        },
+        {
+          "name": "POST /customers/:id/followups",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"note\": \"Called — asked for updated detergent rates.\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/customers/:id/followups",
+              "host": ["{{baseUrl}}"],
+              "path": ["customers", ":id", "followups"]
+            }
+          }
+        },
+        {
+          "name": "DELETE /customers/:id",
+          "request": {
+            "method": "DELETE",
+            "url": { "raw": "{{baseUrl}}/customers/:id", "host": ["{{baseUrl}}"], "path": ["customers", ":id"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Products",
+      "item": [
+        {
+          "name": "GET /products (low stock filter)",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/products?page=1&pageSize=20&search=&lowStock=true",
+              "host": ["{{baseUrl}}"],
+              "path": ["products"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "pageSize", "value": "20" },
+                { "key": "search", "value": "" },
+                { "key": "lowStock", "value": "true" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "POST /products (warehouse/admin only)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Tata Salt 1kg\",\n  \"sku\": \"SAL-101\",\n  \"category\": \"Staples\",\n  \"unitPrice\": 28,\n  \"currentStock\": 200,\n  \"minStock\": 60,\n  \"location\": \"Bay 1\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/products", "host": ["{{baseUrl}}"], "path": ["products"] }
+          }
+        },
+        {
+          "name": "GET /products/:id",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/products/:id", "host": ["{{baseUrl}}"], "path": ["products", ":id"] }
+          }
+        },
+        {
+          "name": "PATCH /products/:id",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"unitPrice\": 29,\n  \"minStock\": 80\n}" },
+            "url": { "raw": "{{baseUrl}}/products/:id", "host": ["{{baseUrl}}"], "path": ["products", ":id"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Stock movements",
+      "item": [
+        {
+          "name": "GET /stock-movements",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/stock-movements?page=1&pageSize=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["stock-movements"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "pageSize", "value": "20" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "POST /stock-movements (warehouse/admin only)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": \"PRODUCT_ID\",\n  \"quantityChanged\": 50,\n  \"type\": \"IN\",\n  \"reason\": \"Supplier delivery\"\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/stock-movements", "host": ["{{baseUrl}}"], "path": ["stock-movements"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Challans",
+      "item": [
+        {
+          "name": "GET /challans",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/challans?page=1&pageSize=20",
+              "host": ["{{baseUrl}}"],
+              "path": ["challans"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "pageSize", "value": "20" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "POST /challans (sales/admin only)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customerId\": \"CUSTOMER_ID\",\n  \"status\": \"DRAFT\",\n  \"items\": [\n    { \"productId\": \"PRODUCT_ID\", \"quantity\": 10 },\n    { \"productId\": \"PRODUCT_ID_2\", \"quantity\": 5 }\n  ]\n}"
+            },
+            "url": { "raw": "{{baseUrl}}/challans", "host": ["{{baseUrl}}"], "path": ["challans"] }
+          }
+        },
+        {
+          "name": "GET /challans/:id",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/challans/:id", "host": ["{{baseUrl}}"], "path": ["challans", ":id"] }
+          }
+        },
+        {
+          "name": "POST /challans/:id/confirm (warehouse/admin)",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/challans/:id/confirm",
+              "host": ["{{baseUrl}}"],
+              "path": ["challans", ":id", "confirm"]
+            }
+          }
+        },
+        {
+          "name": "POST /challans/:id/cancel (admin only)",
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{baseUrl}}/challans/:id/cancel",
+              "host": ["{{baseUrl}}"],
+              "path": ["challans", ":id", "cancel"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Dashboard",
+      "item": [
+        {
+          "name": "GET /dashboard/summary",
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{baseUrl}}/dashboard/summary",
+              "host": ["{{baseUrl}}"],
+              "path": ["dashboard", "summary"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
