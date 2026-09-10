@@ -1,0 +1,29 @@
+# Runs the app database locally. The app itself runs on the host during
+# development (npm run dev), so hot reload works as normal.
+#
+# Usage:
+#   docker compose up -d db
+#   cd backend && npm run db:setup
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: erp_crm_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: erp
+      POSTGRES_PASSWORD: erp_password
+      POSTGRES_DB: erp_crm
+    # 5433 is used on the host because other local projects may already hold
+    # 5432. If 5432 is free on your machine, you can switch this back.
+    ports:
+      - "5433:5432"
+    volumes:
+      - erp_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U erp -d erp_crm"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  erp_pgdata:
