@@ -3,6 +3,12 @@ import { useState } from "react";
 import { useAuth } from "../lib/auth";
 import { ApiError } from "../lib/api";
 
+const FEATURES = [
+  "Customer CRM with follow-up tracking",
+  "Inventory control with stock movement ledger",
+  "Sales challans — draft, confirm, cancel",
+];
+
 export function LoginPage() {
   const { login } = useAuth();
   const [email, setEmail] = useState("");
@@ -26,21 +32,32 @@ export function LoginPage() {
   return (
     <div className="login-shell">
       <div className="login-left">
-        <div>
-          <h1>Nirvana Ops</h1>
-          <p>
-            Order desk for a wholesale &amp; distribution business — customers, inventory,
-            stock movements and sales challans in one place.
-          </p>
+        <div className="login-left-inner">
+          <span className="brand-mark">N</span>
+          <div>
+            <h1>Nirvana Ops</h1>
+            <p className="login-tagline">
+              The order desk for a wholesale &amp; distribution business — customers,
+              inventory, stock movements and sales challans in one place.
+            </p>
+          </div>
+          <ul className="login-features">
+            {FEATURES.map((f) => (
+              <li key={f}>
+                <span className="feature-dot" />
+                {f}
+              </li>
+            ))}
+          </ul>
         </div>
       </div>
+
       <div className="login-right">
         <form className="login-card" onSubmit={onSubmit}>
-          <div>
-            <h2>Sign in</h2>
-            <p className="mono" style={{ fontSize: "0.7rem", color: "var(--ink-light)" }}>
-              Role-based access · JWT
-            </p>
+          <div style={{ display: "grid", gap: "0.15rem" }}>
+            <span className="brand-mark">N</span>
+            <h2>Sign in to console</h2>
+            <span className="login-sub">Role-based access · JWT</span>
           </div>
 
           {error && <div className="alert alert-danger">{error}</div>}
@@ -75,12 +92,14 @@ export function LoginPage() {
             {submitting ? "Signing in…" : "Sign in"}
           </button>
 
-          <div className="mono" style={{ fontSize: "0.72rem", color: "var(--ink-light)" }}>
-            Demo accounts — password <strong>demo@12345</strong>
-            <br />
-            admin@nirvana.in · sales@nirvana.in
-            <br />
-            warehouse@nirvana.in · accounts@nirvana.in
+          <div className="demo-hint">
+            <div style={{ marginBottom: "0.3rem" }}>
+              Demo password: <span className="mono">demo@12345</span>
+            </div>
+            <div className="mono">admin@nirvana.in &nbsp;·&nbsp; Admin</div>
+            <div className="mono">sales@nirvana.in &nbsp;·&nbsp; Sales</div>
+            <div className="mono">warehouse@nirvana.in &nbsp;·&nbsp; Warehouse</div>
+            <div className="mono">accounts@nirvana.in &nbsp;·&nbsp; Accounts</div>
           </div>
         </form>
       </div>

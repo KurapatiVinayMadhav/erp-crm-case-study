@@ -24,7 +24,8 @@ export function Modal({
       style={{
         position: "fixed",
         inset: 0,
-        background: "rgba(23,21,15,0.45)",
+        background: "rgba(19,26,40,0.5)",
+        backdropFilter: "blur(3px)",
         display: "flex",
         alignItems: "flex-start",
         justifyContent: "center",
@@ -39,11 +40,11 @@ export function Modal({
         style={{
           background: "var(--surface)",
           border: "1px solid var(--hairline)",
-          borderRadius: "var(--radius)",
+          borderRadius: "var(--radius-lg)",
           width: "100%",
           maxWidth: wide ? 720 : 480,
           padding: "var(--space-xl)",
-          boxShadow: "0 20px 50px rgba(23,21,15,0.25)",
+          boxShadow: "var(--shadow-lg)",
         }}
       >
         <div

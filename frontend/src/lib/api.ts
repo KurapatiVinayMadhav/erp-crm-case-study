@@ -19,6 +19,11 @@ export class ApiError extends Error {
 
 const TOKEN_KEY = "erp_crm_token";
 
+// API base URL. Set VITE_API_URL at build time to point the app at a remote
+// backend (Vercel/Netlify/Render). When empty, requests go to the same origin
+// (Vite dev proxy in local development).
+const API_BASE = import.meta.env.VITE_API_URL ?? "";
+
 export function getToken(): string | null {
   return window.localStorage.getItem(TOKEN_KEY);
 }
@@ -36,7 +41,7 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   }
   if (token) headers.set("Authorization", `Bearer ${token}`);
 
-  const response = await fetch(path, { ...options, headers });
+  const response = await fetch(`${API_BASE}${path}`, { ...options, headers });
 
   let data: unknown = null;
   const text = await response.text();
