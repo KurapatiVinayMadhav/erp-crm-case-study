@@ -170,6 +170,19 @@ No money was spent; any free tier satisfies the stack. A suggested setup:
 | Backend   | **Render**      | new Web Service → repo `backend/` dir, build `npm install && npm run build`, start `npm run start`. Set `DATABASE_URL`, `JWT_SECRET`, `CORS_ORIGIN` (your frontend URL) in the dashboard's environment tab. Run `npm run db:setup` once via a shell session or start command. |
 | Frontend  | **Vercel** or **Netlify** | root `frontend/`, build command `npm run build`, output `dist`. Optional env `VITE_API_URL` if you don't use a reverse proxy. |
 
+### Live instances
+
+| Piece           | URL                                                             |
+| --------------- | --------------------------------------------------------------- |
+| Frontend (app)  | <https://erp-crm-case-study.vercel.app>                           |
+| Backend API     | <https://erp-crm-case-study-prsn.onrender.com>                    |
+| Health check    | <https://erp-crm-case-study-prsn.onrender.com/health>             |
+
+Log in at the frontend with any demo account (`demo@12345`). The hosted
+database is a free-tier Neon PostgreSQL; the API runs on Render's free tier,
+which sleeps after ~15 minutes idle — open `/health` and wait a few seconds if
+the first request is slow.
+
 ### Docker
 
 `docker-compose.yml` runs the local database. A full-containerised run (API +
